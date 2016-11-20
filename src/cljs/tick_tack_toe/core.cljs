@@ -3,7 +3,7 @@
               [re-frame.core :as re-frame]
               [tick-tack-toe.events]
               [tick-tack-toe.subs]
-              [tick-tack-toe.views :as views]
+              [tick-tack-toe.views.core :as views]
               [tick-tack-toe.config :as config]))
 
 
@@ -13,7 +13,7 @@
     (println "dev mode")))
 
 (defn mount-root []
-  (reagent/render [views/main-panel]
+  (reagent/render [views/main-page]
                   (.getElementById js/document "app")))
 
 (defn ^:export init []

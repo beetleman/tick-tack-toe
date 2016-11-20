@@ -1,6 +1,6 @@
-(ns tick-tack-toe.views
-    (:require [re-frame.core :as re-frame]))
-
+(ns tick-tack-toe.views.core
+  (:require [re-frame.core :as re-frame]
+            [tick-tack-toe.views.game :as game-view]))
 
 
 (defn button [icon text]
@@ -24,10 +24,18 @@
    [button-new]])
 
 
-(defn main-panel []
+(def fake-game
+  [[nil nil nil nil]
+   [nil 1 1 nil]
+   [nil 0 nil nil]
+   [nil nil nil nil]])
+
+(defn main-page []
   (let [name (re-frame/subscribe [:name])]
     (fn []
       [:div
        [:h1 @name]
-       [control]])))
+       [control]
+       [game-view/board fake-game]])))
+
 
