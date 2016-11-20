@@ -1,0 +1,15 @@
+#app {
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+h1 {
+    text-align: center;
+}
+
+.control {
+    text-align: center;
+}
+.control button {
+    margin-right: 10px;
+}
