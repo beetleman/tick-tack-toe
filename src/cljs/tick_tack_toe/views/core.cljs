@@ -3,19 +3,22 @@
             [tick-tack-toe.views.game :as game-view]))
 
 
-(defn button [icon text]
-  [:button.pure-button
+(defn button [options icon text]
+  [:button.pure-button options
    icon text])
 
 (defn button-load []
-  [button [:i.fa.fa-folder-open] " Load Game"])
+  [button {}
+   [:i.fa.fa-folder-open] " Load Game"])
 
 (defn button-save []
-  [button [:i.fa.fa-floppy-o] " Save Game"])
+  [button {}
+   [:i.fa.fa-floppy-o] " Save Game"])
 
 
 (defn button-new []
-  [button [:i.fa.fa-file-o] " New Game"])
+  [button {:on-click #(re-frame/dispatch [:new-game])}
+   [:i.fa.fa-file-o] " New Game"])
 
 (defn control []
   [:div.control
@@ -24,18 +27,13 @@
    [button-new]])
 
 
-(def fake-game
-  [[nil nil nil nil]
-   [nil 1 1 nil]
-   [nil 0 nil nil]
-   [nil nil nil nil]])
-
 (defn main-page []
-  (let [name (re-frame/subscribe [:name])]
+  (let [name (re-frame/subscribe [:name])
+        game-board (re-frame/subscribe [:board])]
     (fn []
       [:div
        [:h1 @name]
        [control]
-       [game-view/board fake-game]])))
+       [game-view/board @game-board]])))
 
 

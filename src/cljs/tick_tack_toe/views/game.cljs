@@ -1,24 +1,26 @@
-(ns tick-tack-toe.views.game)
+(ns tick-tack-toe.views.game
+  (:require [re-frame.core :as re-frame]
+            [tick-tack-toe.consts :as c]))
 
 
-(defn cell [cell-definition]
-  [:td
+(defn cell [cell-definition row-nr cell-nr]
+  [:td {:on-click #(re-frame/dispatch [:check-field row-nr cell-nr])}
    (cond
      (= cell-definition nil)
      [:div.field.empty]
 
-     (= cell-definition 1)
+     (= cell-definition c/me)
      [:div.field.me]
 
-     (= cell-definition 0)
+     (= cell-definition c/you)
      [:div.field.you])])
 
 
-(defn row [row-definition]
+(defn row [row-definition row-nr]
   [:tr
    (map-indexed
     (fn [idx cell-definition]
-      ^{:key idx} [cell cell-definition])
+      ^{:key idx} [cell cell-definition row-nr idx])
     row-definition)])
 
 
@@ -27,5 +29,5 @@
    [:tbody
     (map-indexed
      (fn [idx row-definition]
-       ^{:key idx} [row row-definition])
+       ^{:key idx} [row row-definition idx])
      board-definition)]])
