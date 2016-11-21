@@ -1,7 +1,6 @@
 /*.log
 /target
 /*-init.clj
-/resources/public/js/compiled/*
-!/resources/public/js/compiled/app.js
+/resources/public/js/compiled
 out
 /.nrepl-port

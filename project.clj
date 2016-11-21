@@ -45,7 +45,7 @@
     {:id           "min"
      :source-paths ["src/cljs"]
      :compiler     {:main            tick-tack-toe.core
-                    :output-to       "resources/public/js/compiled/app.js"
+                    :output-to       "dist/js/compiled/app.js"
                     :optimizations   :advanced
                     :closure-defines {goog.DEBUG false}
                     :pretty-print    false}}
