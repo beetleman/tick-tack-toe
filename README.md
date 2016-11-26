@@ -1,6 +1,6 @@
 # tick-tack-toe
 
-A [re-frame](https://github.com/Day8/re-frame) application designed to ... well, that part is up to you.
+A [re-frame](https://github.com/Day8/re-frame) application designed to play tick-tack-toe with AI
 
 ## Development Mode
 
@@ -16,7 +16,7 @@ Navigate to a clojurescript file and start a figwheel REPL with `cider-jack-in-c
 
 ### Run application:
 
-```
+```bash
 lein clean
 lein figwheel dev
 ```
@@ -27,19 +27,18 @@ Wait a bit, then browse to [http://localhost:3449](http://localhost:3449).
 
 ### Run tests:
 
-```
+```bash
 lein clean
 lein doo phantom test once
 ```
 
-The above command assumes that you have [phantomjs](https://www.npmjs.com/package/phantomjs) installed. However, please note that [doo](https://github.com/bensu/doo) can be configured to run cljs.test in many other JS environments (chrome, ie, safari, opera, slimer, node, rhino, or nashorn).
+The above command assumes that you have [phantomjs](https://www.npmjs.com/package/phantomjs) installed. 
 
 ## Production Build
 
 
 To compile clojurescript to javascript:
 
-```
-lein clean
-lein cljsbuild once min
+```bash
+./release.sh
 ```
