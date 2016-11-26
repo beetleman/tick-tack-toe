@@ -5,4 +5,4 @@
 
 (def default-db
   {:name "Tick-tack-toe"
-   :board (g/new-board c/max-size)})
+   :game-history []})

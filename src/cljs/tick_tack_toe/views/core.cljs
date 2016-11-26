@@ -7,9 +7,11 @@
   [:button.pure-button options
    icon text])
 
+
 (defn button-load []
   [button {}
    [:i.fa.fa-folder-open] " Load Game"])
+
 
 (defn button-save []
   [button {}
@@ -19,6 +21,7 @@
 (defn button-new []
   [button {:on-click #(re-frame/dispatch [:new-game])}
    [:i.fa.fa-file-o] " New Game"])
+
 
 (defn control []
   [:div.control
