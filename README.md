@@ -1,5 +1,7 @@
 # tick-tack-toe
 
+[![Build Status](https://travis-ci.org/beetleman/tick-tack-toe.svg?branch=master)](https://travis-ci.org/beetleman/tick-tack-toe)
+
 A [re-frame](https://github.com/Day8/re-frame) application designed to play tick-tack-toe with AI
 
 ## Development Mode
