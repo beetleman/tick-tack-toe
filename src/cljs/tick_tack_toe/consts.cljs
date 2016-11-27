@@ -3,4 +3,4 @@
 (def me 1)
 (def you 0)
 (def max-size 10)
-(def win-lenght 5)
+(def win-length 5)
