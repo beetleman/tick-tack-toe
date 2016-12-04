@@ -18,20 +18,53 @@
 }
 
 
-#app .game {
-    margin: 50px auto;
+
+#app .board-wrapper {
+    text-align: center;
 }
-#app .game td {
+
+#app .board-container {
+    position: relative;
+    display: inline-block;
+    margin: 20px auto;
+}
+
+#app .board-container .score {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+}
+
+#app .board-container .score.lose {
+    background: rgba(255, 216, 217, 0.6);
+}
+
+#app .board-container .score.win {
+    background: rgba(211, 255, 253, 0.6);
+}
+
+#app .board-container .score .text {
+    position: absolute;
+    font-size: 32px;
+    font-weight: 800;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#app .board-container .board td {
     padding: 10px;
 }
-#app .game .field {
+#app .board-container .board .field {
     height: 30px;
     width: 30px;
     border-radius: 15px;
 }
-#app .game .field.me {
+#app .board-container .board .field.me {
     background: green;
 }
-#app .game .field.you {
+#app .board-container .board .field.you {
     background: red;
 }

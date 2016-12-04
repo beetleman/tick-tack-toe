@@ -28,24 +28,24 @@
 
 (defn win [who]
   [:div.score.win
-   [:div who " win!"]])
+   [:div.text who " win!"]])
 
 (defn lose [who]
   [:div.score.lose
-   [:div who " lose!"]])
+   [:div.text who " lose!"]])
 
 
 (defn board [board-definition winner]
-  [:div.board
+  [:div.board-wrapper>div.board-container
    (condp = winner
          c/you
-         [:win "You"]
+         [win "You"]
 
          c/me
-         [:lose "You"]
+         [lose "You"]
 
          nil)
-   [:table.game.pure-table.pure-table-bordered
+   [:table.board.pure-table.pure-table-bordered
     [:tbody
      (map-indexed
       (fn [idx row-definition]
