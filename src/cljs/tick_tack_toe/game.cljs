@@ -32,47 +32,59 @@
       (empty? coll)
       (conj subseq curr)
 
-      (= (-> curr last incfn) (-> coll first keyfn))
+      (= (-> curr last incfn keyfn) (-> coll first keyfn))
       (recur (rest coll) (conj curr (first coll)) subseq)
 
       :default
       (recur (rest coll) [(first coll)] (conj subseq curr)))))
 
 
-(defn find-h-lines [coll]
-  (find-lines* coll :x #(-> % :x inc)))
-
-
-(defn find-v-lines [coll]
-  (find-lines* coll :y #(-> % :y inc)))
-
-
-(defn find-x-r-lines [coll]
+(defn find-h-lines [coll max-size]
   (find-lines* coll
-               (fn [itm] [(:x itm) (:y itm)])
-               (fn [itm] [(-> itm :x inc) (-> itm :y inc)])))
+               #(+ (:x %) (* (:y %) max-size))
+               #(update % :x inc)))
 
 
-(defn has-wining-line [player find-lines win-length]
-  (let [lines (find-lines player)]
+(defn find-v-lines [coll max-size]
+  (find-lines* coll
+               #(+ (:y %) (* (:x %) max-size))
+               #(update % :y inc)))
+
+
+(defn find-x-r-lines [coll max-size]
+  (find-lines* coll
+               (fn [itm] (+ (:x itm) (:y itm) (/ (:x itm) max-size )))
+               #(-> % (update :x inc) (update :y dec))))
+
+
+
+(defn find-x-l-lines [coll max-size]
+  (find-lines* coll
+               (fn [itm] (- (:x itm) (:y itm) (/ (:x itm) max-size)))
+               #(-> % (update :x dec) (update :y dec))))
+
+
+(defn has-wining-line [player find-lines win-length max-size]
+  (let [lines (find-lines player max-size)]
     ((complement empty?) (filter #(<= win-length (count %)) lines))))
 
 
-(defn win? [player win-length]
-  (or (has-wining-line player find-v-lines win-length)
-      (has-wining-line player find-h-lines win-length)
-      (has-wining-line player find-x-r-lines win-length)))
+(defn win? [player win-length max-size]
+  (or (has-wining-line player find-v-lines win-length max-size)
+      (has-wining-line player find-h-lines win-length max-size)
+      (has-wining-line player find-x-r-lines win-length max-size)
+      (has-wining-line player find-x-l-lines win-length max-size)))
 
 
-(defn who-win [game-history win-length]
+(defn who-win [game-history win-length max-size]
   (let [grouped (group-by :who game-history)
         me (get grouped c/me)
         you (get grouped c/you)]
     (cond
-      (or (win? me win-length))
+      (or (win? me win-length max-size))
       c/me
 
-      (or (win? you win-length))
+      (or (win? you win-length max-size))
       c/you
 
       :default

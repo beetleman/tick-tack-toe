@@ -7,6 +7,7 @@
   [(game/move. 1 2 0)
    (game/move. 1 4 0)
    (game/move. 1 5 0)
+   (game/move. 1 5 2)
    (game/move. 1 6 0)
    (game/move. 0 7 0)])
 
@@ -14,19 +15,22 @@
   [(game/move. 1 1 8)
    (game/move. 1 1 10)
    (game/move. 1 1 11)
+   (game/move. 1 3 11)
    (game/move. 1 1 12)
    (game/move. 0 1 13)])
 
-(def cross-3-r
-  [(game/move. 1 5 1)
+(def cross-3-l
+  [(game/move. 1 4 0)
    (game/move. 1 7 3)
    (game/move. 1 8 4)
+   (game/move. 1 6 000000000)
    (game/move. 1 9 5)
    (game/move. 0 10 6)])
 
-(def cross-3-l
+(def cross-3-r
   [(game/move. 0 10 3)
    (game/move. 1 9 4)
+   (game/move. 1 9 5)
    (game/move. 1 8 5)
    (game/move. 1 7 6)
    (game/move. 1 5 8)])
@@ -62,26 +66,23 @@
 
 (deftest find-lines
   (testing "find-h-lines"
-    (is (= (game/find-h-lines [{:x 1} {:x 2} {:x 4} {:x 5} {:x 6}])
-           [[{:x 1} {:x 2}] [{:x 4} {:x 5} {:x 6}]]))))
+    (is (= (game/find-h-lines [{:x 1 :y 1} {:x 2 :y 1} {:x 4 :y 1} {:x 5 :y 1} {:x 6 :y 1}] 10)
+           [[] [{:x 1, :y 1} {:x 2, :y 1}] [{:x 4, :y 1} {:x 5, :y 1} {:x 6, :y 1}]]))))
+
 
 (deftest who-win
   (testing "win horizontal line"
-    (is (= (game/who-win horizontal-3 4) nil))
-    (is (= (game/who-win horizontal-3 3) 1))
-    (is (= (game/who-win horizontal-3 2) 1)))
+    (is (= (game/who-win horizontal-3 4 15) nil))
+    (is (= (game/who-win horizontal-3 3 15) 1)))
 
   (testing "win vertical line"
-    (is (= (game/who-win horizontal-3 4) nil))
-    (is (= (game/who-win horizontal-3 3) 1))
-    (is (= (game/who-win horizontal-3 2) 1)))
+    (is (= (game/who-win vertical-3 4 15) nil))
+    (is (= (game/who-win vertical-3 3 15) 1)))
 
-  (testing "win cross left line"
-    (is (= (game/who-win cross-3-l 4) nil))
-    (is (= (game/who-win cross-3-l 3) 1))
-    (is (= (game/who-win cross-3-l 2) 1)))
+  (testing "win cross right line"
+    (is (= (game/who-win cross-3-r 4 15) nil))
+    (is (= (game/who-win cross-3-r 3 15) 1)))
 
-  (testing "win cros right line"
-    (is (= (game/who-win cross-3-r 4) nil))
-    (is (= (game/who-win cross-3-r 3) 1))
-    (is (= (game/who-win cross-3-r 2) 1))))
+  (testing "win cros left line"
+    (is (= (game/who-win cross-3-l 4 15) nil))
+    (is (= (game/who-win cross-3-l 3 15) 1))))
