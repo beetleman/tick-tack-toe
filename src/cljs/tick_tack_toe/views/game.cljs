@@ -4,18 +4,18 @@
 
 
 (defn cell [cell-definition row-nr cell-nr]
-  (cond
-    (= cell-definition nil)
-    [:td {:on-click #(re-frame/dispatch [:check-field row-nr cell-nr])}
-     [:div.field.empty]]
+  (condp = cell-definition
+         nil
+         [:td {:on-click #(re-frame/dispatch [:check-field row-nr cell-nr])}
+          [:div.field.empty]]
 
-    (= cell-definition c/me)
-    [:td
-     [:div.field.me]]
+         c/me
+         [:td
+          [:div.field.me]]
 
-    (= cell-definition c/you)
-    [:td
-     [:div.field.you]]))
+         c/you
+         [:td
+          [:div.field.you]]))
 
 
 (defn row [row-definition row-nr]
@@ -26,10 +26,28 @@
     row-definition)])
 
 
-(defn board [board-definition]
-  [:table.game.pure-table.pure-table-bordered
-   [:tbody
-    (map-indexed
-     (fn [idx row-definition]
-       ^{:key idx} [row row-definition idx])
-     board-definition)]])
+(defn win [who]
+  [:div.score.win
+   [:div who " win!"]])
+
+(defn lose [who]
+  [:div.score.lose
+   [:div who " lose!"]])
+
+
+(defn board [board-definition winner]
+  [:div.board
+   (condp = winner
+         c/you
+         [:win "You"]
+
+         c/me
+         [:lose "You"]
+
+         nil)
+   [:table.game.pure-table.pure-table-bordered
+    [:tbody
+     (map-indexed
+      (fn [idx row-definition]
+        ^{:key idx} [row row-definition idx])
+      board-definition)]]])

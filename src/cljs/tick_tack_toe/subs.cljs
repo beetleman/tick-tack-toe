@@ -19,3 +19,11 @@
 (re-frame/reg-sub
  :board
  get-board)
+
+
+(defn get-winner [db]
+  (g/who-win (:game-history db) c/win-length c/max-size))
+
+(re-frame/reg-sub
+ :winner
+ get-winner)

@@ -32,11 +32,12 @@
 
 (defn main-page []
   (let [name (re-frame/subscribe [:name])
+        who-win (re-frame/subscribe [:winner])
         game-board (re-frame/subscribe [:board])]
     (fn []
       [:div
        [:h1 @name]
        [control]
-       [game-view/board @game-board]])))
+       [game-view/board @game-board @who-win]])))
 
 
