@@ -39,5 +39,3 @@
        [:h1 @name]
        [control]
        [game-view/board @game-board @who-win]])))
-
-
