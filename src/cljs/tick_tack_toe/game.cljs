@@ -131,7 +131,7 @@
    (< 0 y max-size)
    ((complement contains?)
     (set (map #(select-keys % [:x :y]) game-history))
-    [x y])))
+    {:x x :y y})))
 
 
 
@@ -209,9 +209,6 @@
                                                  win-length)
                   update-by-conter-moves
                   who)]
-    (println (find-all-posible-moves-by-who game-history
-                                            max-size
-                                            win-length))
     (->>
      moves
      (sort-by :to-win)
