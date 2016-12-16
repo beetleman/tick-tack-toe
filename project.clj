@@ -1,6 +1,7 @@
 (defproject tick-tack-toe "0.1.0-SNAPSHOT"
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.229"]
+                 [cljsjs/filesaverjs "1.3.3-0"]
                  [reagent "0.6.0"]
                  [re-frame "0.8.0"]]
 

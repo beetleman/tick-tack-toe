@@ -20,6 +20,7 @@
 
 (defn row [row-definition row-nr]
   [:tr
+   [:td row-nr]
    (map-indexed
     (fn [idx cell-definition]
       ^{:key idx} [cell cell-definition row-nr idx])
@@ -47,6 +48,10 @@
          nil)
    [:table.board.pure-table.pure-table-bordered
     [:tbody
+     [:tr [:td ](map-indexed
+                 (fn [idx row-definition]
+                   ^{:key idx} [:td idx])
+                 board-definition)]
      (map-indexed
       (fn [idx row-definition]
         ^{:key idx} [row row-definition idx])

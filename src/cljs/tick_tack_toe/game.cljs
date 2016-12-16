@@ -24,6 +24,25 @@
   board)
 
 
+(def next-move-on-line-fns
+  {:h #(update % :x inc)
+   :v #(update % :y inc)
+   :x-r #(-> % (update :x inc) (update :y dec))
+   :x-l #(-> % (update :x dec) (update :y dec))})
+
+(defn next-move-on-line [type m]
+  ((next-move-on-line-fns type) m))
+
+(def previous-move-on-line-fns
+  {:h #(update % :x dec)
+   :v #(update % :y dec)
+   :x-r #(-> % (update :x dec) (update :y inc))
+   :x-l #(-> % (update :x inc) (update :y inc))})
+
+(defn previous-move-on-line [type m]
+  ((previous-move-on-line-fns type) m))
+
+
 (defn find-lines* [coll keyfn incfn]
   (let [sorted (sort-by keyfn coll)
         first-el (first sorted)]
@@ -46,26 +65,26 @@
 (defn find-h-lines [coll max-size]
   (find-lines* coll
                #(+ (:x %) (* (:y %) max-size))
-               #(update % :x inc)))
+               (next-move-on-line-fns :h)))
 
 
 (defn find-v-lines [coll max-size]
   (find-lines* coll
                #(+ (:y %) (* (:x %) max-size))
-               #(update % :y inc)))
+               (next-move-on-line-fns :v)))
 
 
 (defn find-x-r-lines [coll max-size]
   (find-lines* coll
                (fn [itm] (+ (:x itm) (:y itm) (/ (:x itm) max-size )))
-               #(-> % (update :x inc) (update :y dec))))
+               (next-move-on-line-fns :x-r)))
 
 
 
 (defn find-x-l-lines [coll max-size]
   (find-lines* coll
                (fn [itm] (- (:x itm) (:y itm) (/ (:x itm) max-size)))
-               #(-> % (update :x dec) (update :y dec))))
+               (next-move-on-line-fns :x-l)))
 
 
 (defn has-wining-line [player find-lines win-length max-size]
@@ -115,8 +134,86 @@
     [x y])))
 
 
+
 (defn find-all-lines-by-who [game-history max-size]
-  (reduce
-   (fn [acc [k v]] (assoc acc k (find-all-lines v max-size)))
-   {}
-   (group-by-who game-history)))
+  (-> (group-by-who game-history)
+      (update :you #(find-all-lines % max-size))
+      (update :me #(find-all-lines % max-size))))
+
+
+(defn find-good-move
+  [game-history line win-length max-size iterate-fn last-fn]
+  (let [to-win (- win-length (count line) 1)
+        posible-moves (->> (iterate iterate-fn (last-fn line))
+                           (drop 1)
+                           (take (- win-length (count line))))]
+    (if (some false? (map #(is-posible-move?
+                          game-history
+                          max-size
+                          %)
+                        posible-moves))
+      {:to-win nil
+       :moves nil}
+      {:to-win to-win
+       :move (first posible-moves)})))
+
+
+(defn find-all-posible-moves
+  [game-history all-posible-lines win-length max-size]
+  (->>
+   (mapcat (fn [[k lines]]
+             (let [next-fn (next-move-on-line-fns k)
+                   previous-fn (previous-move-on-line-fns k)]
+               (mapcat (fn [line]
+                         [(find-good-move game-history
+                                          line
+                                          win-length
+                                          max-size
+                                          next-fn
+                                          last)
+                          (find-good-move game-history
+                                          line
+                                          win-length
+                                          max-size
+                                          previous-fn
+                                          first)])
+                       lines)))
+           all-posible-lines)
+   distinct
+   (filter #(-> % :to-win nil? not))))
+
+(defn find-all-posible-moves-by-who [game-history max-size win-length]
+  (-> (find-all-lines-by-who game-history max-size)
+      (update :you #(find-all-posible-moves game-history
+                                            %
+                                            win-length
+                                            max-size))
+      (update :me #(find-all-posible-moves game-history
+                                           %
+                                           win-length
+                                           max-size))))
+
+(defn update-by-conter-moves [all-posible-moves-by-who]
+  (->
+   all-posible-moves-by-who
+   (update :me (fn [x]
+                 (concat x (map #(assoc-in % [:move :who] c/me)
+                                (:you all-posible-moves-by-who)))))
+   (update :you (fn [x]
+                 (concat x (map #(assoc-in % [:move :who] c/you)
+                                (:me all-posible-moves-by-who)))))))
+
+(defn generate-move [game-history who max-size win-length]
+  (let [moves (-> (find-all-posible-moves-by-who game-history
+                                                 max-size
+                                                 win-length)
+                  update-by-conter-moves
+                  who)]
+    (println (find-all-posible-moves-by-who game-history
+                                            max-size
+                                            win-length))
+    (->>
+     moves
+     (sort-by :to-win)
+     first
+     :move)))

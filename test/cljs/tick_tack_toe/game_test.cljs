@@ -4,7 +4,22 @@
 
 (def horizontal-2
   [(game/move. 1 1 0)
+   (game/move. 0 2 2)
    (game/move. 1 2 0)])
+
+(def all-posible-lines-by-who-for-horizontal-2
+  {:me {:h [[(game/move. 1 1 0)
+             (game/move. 1 2 0)]]
+        :v [[(game/move. 1 1 0)]
+            [(game/move. 1 2 0)]]
+        :x-l [[(game/move. 1 1 0)]
+              [(game/move. 1 2 0)]]
+        :x-r [[(game/move. 1 1 0)]
+              [(game/move. 1 2 0)]]}
+   :you {:h [[(game/move. 0 2 2)]]
+         :v [[(game/move. 0 2 2)]]
+         :x-l [[(game/move. 0 2 2)]]
+         :x-r [[(game/move. 0 2 2)]]}})
 
 (def horizontal-3
   [(game/move. 1 2 0)
@@ -95,18 +110,7 @@
 (deftest find-all-lines-by-who
   (testing "working"
     (is (= (game/find-all-lines-by-who horizontal-2 15)
-           {:me {:h [[(game/move. 1 1 0)
-                      (game/move. 1 2 0)]]
-                 :v [[(game/move. 1 1 0)]
-                     [(game/move. 1 2 0)]]
-                 :x-l [[(game/move. 1 1 0)]
-                       [(game/move. 1 2 0)]]
-                 :x-r [[(game/move. 1 1 0)]
-                       [(game/move. 1 2 0)]]}
-            :you {:h []
-                  :v []
-                  :x-l []
-                  :x-r []}}))))
+           all-posible-lines-by-who-for-horizontal-2))))
 
 (deftest is-posible-move?
   (testing "negative numbers"
@@ -151,3 +155,29 @@
          horizontal-2 5
          (game/move. 1 2 4))
         true))))
+
+
+(deftest find-all-posible-moves-by-who
+  (testing "retuns proper data"
+    (is (map? (game/find-all-posible-moves-by-who horizontal-2 16 3)))
+    #_(is (= (game/find-all-posible-moves-by-who horizontal-2 16 3)
+           {:me [{:move (game/move.  1 1 1) :to-win 2}
+                 {:move (game/move. 1 2 1) :to-win 2}
+                 {:move (game/move. 1 3 1) :to-win 2}]
+
+            :you [{:move (game/move. 0 2 2) :to-win 2}]}))))
+
+
+#_(deftest update-by-conter-moves
+  (let [all-posible-moves-by-who (game/find-all-posible-moves-by-who
+                                  horizontal-2 6 3)]
+    (is (= (game/update-by-conter-moves all-posible-moves-by-who 3)
+           {:me [{:move (game/move. 1 1 1) :to-win 2}
+                 {:move (game/move. 1 2 1) :to-win 2}
+                 {:move (game/move. 1 3 1) :to-win 2}
+                 {:move (game/move. 1 2 2) :to-win 2}]
+
+            :you [{:move (game/move. 0 2 2) :to-win 2}
+                  {:move (game/move. 0 1 1) :to-win 2}
+                  {:move (game/move. 0 2 1) :to-win 2}
+                  {:move (game/move. 0 3 1) :to-win 2}]}))))

@@ -14,7 +14,12 @@
 
 
 (defn check-field-handler [db [_ x y]]
-  (update db :game-history conj (g/move. c/you x y)))
+  (let [db (update db :game-history conj (g/move. c/you x y))
+        game-history (:game-history db)]
+    (update db :game-history conj (g/generate-move game-history
+                                                   :me
+                                                   c/max-size
+                                                   c/win-length))))
 
 (re-frame.core/reg-event-db
  :check-field
