@@ -11,7 +11,10 @@
             :game-history []})))
 
   (testing "check-field-handler"
-    (is (= (events/check-field-handler {:game-history [(g/move. 1 1 1)]} [nil 2 3])
+    (is (= (update (events/check-field-handler
+                    {:game-history [(g/move. 1 1 1)]} [nil 2 3])
+                   :game-history
+                   drop-last)
            {:game-history [(g/move. 1 1 1) (g/move. 0 2 3)]})))
 
   (testing "new-game-handler"

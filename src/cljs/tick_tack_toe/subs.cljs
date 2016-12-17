@@ -27,3 +27,11 @@
 (re-frame/reg-sub
  :winner
  get-winner)
+
+
+(defn get-game-history [db]
+  (:game-history db))
+
+(re-frame/reg-sub
+ :game-history
+ get-game-history)
