@@ -3,6 +3,11 @@
 
 (defrecord move [who x y])
 
+(def log (.-log js/console))
+(defn log-it [n]
+  (log n)
+  n)
+
 (defn repeatv [times v]
   (-> (repeat times v) vec))
 
