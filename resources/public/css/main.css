@@ -69,6 +69,15 @@
 #app .board-container .board td {
     padding: 10px;
 }
+
+#app .board-container .board td.info-h {
+    background-color: #F6F6F6;
+    height: 30px;
+}
+#app .board-container .board td.info-v {
+    background-color: #F6F6F6;
+    width: 30px;
+}
 #app .board-container .board .field {
     height: 30px;
     width: 30px;
