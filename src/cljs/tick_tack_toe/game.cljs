@@ -3,10 +3,6 @@
 
 (defrecord move [who x y])
 
-(def log (.-log js/console))
-(defn log-it [n]
-  (log n)
-  n)
 
 (defn repeatv [times v]
   (-> (repeat times v) vec))
@@ -23,11 +19,6 @@
      (assoc-in acc [(:x itm) (:y itm)] (:who itm)))
    (new-board size)
    game-history))
-
-(defn check-random [board who]
-  ;; TODO implementation
-  board)
-
 
 (def next-move-on-line-fns
   {:h #(update % :x inc)
@@ -132,8 +123,8 @@
 
 (defn is-posible-move? [game-history max-size {:keys [x y]}]
   (and
-   (< 0 x max-size)
-   (< 0 y max-size)
+   (< -1 x max-size)
+   (< -1 y max-size)
    ((complement contains?)
     (set (map #(select-keys % [:x :y]) game-history))
     {:x x :y y})))
@@ -145,22 +136,32 @@
       (update :you #(find-all-lines % max-size))
       (update :me #(find-all-lines % max-size))))
 
-
 (defn find-good-move
-  [game-history line win-length max-size iterate-fn last-fn]
+  [game-history line win-length max-size next-fn previous-fn]
   (let [to-win (- win-length (count line) 1)
-        posible-moves (->> (iterate iterate-fn (last-fn line))
+        valid? #(is-posible-move?
+                   game-history
+                   max-size
+                   %)
+        posible-moves- (->> (iterate previous-fn (first line))
+                            (drop 1)
+                            (take-while valid?))
+
+        posible-moves+ (->> (iterate next-fn (last line))
                            (drop 1)
-                           (take (- win-length (count line))))]
-    (if (some false? (map #(is-posible-move?
-                          game-history
-                          max-size
-                          %)
-                        posible-moves))
-      {:to-win nil
-       :moves nil}
-      {:to-win to-win
-       :move (first posible-moves)})))
+                           (take-while valid?))
+        posible-length (+ (count posible-moves+) (count line) (count posible-moves-))
+        create-move (fn [moves]
+                      (let [move (first moves)]
+                        {:to-win (if move
+                                   to-win
+                                   nil)
+                         :posible-length posible-length
+                         :move move}))]
+    (if (< posible-length win-length)
+      [(create-move [])]
+      [(create-move posible-moves-)
+       (create-move posible-moves+)])))
 
 
 (defn find-all-posible-moves
@@ -170,18 +171,12 @@
              (let [next-fn (next-move-on-line-fns k)
                    previous-fn (previous-move-on-line-fns k)]
                (mapcat (fn [line]
-                         [(find-good-move game-history
-                                          line
-                                          win-length
-                                          max-size
-                                          next-fn
-                                          last)
-                          (find-good-move game-history
-                                          line
-                                          win-length
-                                          max-size
-                                          previous-fn
-                                          first)])
+                         (find-good-move game-history
+                                         line
+                                         win-length
+                                         max-size
+                                         next-fn
+                                         previous-fn))
                        lines)))
            all-posible-lines)
    distinct
@@ -202,11 +197,20 @@
   (->
    all-posible-moves-by-who
    (update :me (fn [x]
-                 (concat x (map #(assoc-in % [:move :who] c/me)
+                 (concat x (map #(->
+                                  (assoc-in % [:move :who] c/me)
+                                  #_(update :to-win dec))
                                 (:you all-posible-moves-by-who)))))
    (update :you (fn [x]
-                 (concat x (map #(assoc-in % [:move :who] c/you)
-                                (:me all-posible-moves-by-who)))))))
+                  (concat x (map #(->
+                                   (assoc-in % [:move :who] c/you)
+                                   #_(update :to-win dec))
+                                 (:me all-posible-moves-by-who)))))))
+
+(defn score [moves game-history max-size win-length]
+  (map (fn [m] (assoc m :score (+ (- win-length (:to-win m))
+                                  (/ (:posible-length m) max-size))))
+       moves))
 
 (defn generate-move [game-history who max-size win-length]
   (let [moves (-> (find-all-posible-moves-by-who game-history
@@ -215,7 +219,7 @@
                   update-by-conter-moves
                   who)]
     (->>
-     moves
-     (sort-by :to-win)
-     first
+     (score moves game-history max-size win-length)
+     (sort-by :score)
+     last
      :move)))
